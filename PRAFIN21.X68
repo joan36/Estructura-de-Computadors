@@ -1,7 +1,7 @@
 
 *-----------------------------------------------------------
 * Title      : PRAFIN21
-* Written by : <nombres completos de los autores>
+* Written by : Joan Gomila Morales,Mateu Joan Perellò
 * Date       : 31/05/2021
 * Description: Emulador de la CDB
 *-----------------------------------------------------------
@@ -110,24 +110,24 @@ EHLT:
 
 EJMN:
 
-	MOVE.W EIR,D6
-	BTST.L #2,D6
+	MOVE.W ESR,D6 ;MOVEMOS REGISTRO ESR
+	BTST.L #2,D6 ;MIRAMOS VALOR DE BIT N
 	BNE SALOTN
-	BRAEFETCH
+	BRAEFETCH ;SI N=0 PASAMOS A LA SIGUIENTE INSTRUCIÓN
 	;SI ESTOY AQUI ES PORQUE N=1
-	AND.W #$0FF0,EIR
+	AND.W #$0FF0,EIR ;SACAMOS EL VALOR DE LA DIRECCIÓN M
 	MOVE.W EIR,D2
 	LSR.L #4,D3
-	MOVE.W D2,EPC
+	MOVE.W D2,EPC ;METEMOS DIRECCIÓN M EN EL EPC
 	BRA EFETCH
     
 EJMZ:
-	MOVE.W EIR,D6
-	BTST.L #0,D6
+	MOVE.W ESR,D6 ;MOVEMOS REGISTRO ESR
+	BTST.L #0,D6 ;MIRAMOS ES VALOR DE Z 
 	BNE SALOTN
-	BRAEFETCH
+	BRAEFETCH ;SI Z=0, PASAMOS A LA SIGUIENTE INSTRUCCIÓN
 	;SI ESTOY AQUI ES PORQUE Z=1
-	AND.W #$0FF0,EIR
+	AND.W #$0FF0,EIR ;OBTENEMOS VALOR DE M
 	MOVE.W EIR,D2
 	LSR.L #4,D3
 	MOVE.W D2,EPC
