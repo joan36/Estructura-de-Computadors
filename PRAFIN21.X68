@@ -6,8 +6,7 @@
 * Description: Emulador de la CDB
 *-----------------------------------------------------------
     ORG $1000
-EPROG:  DC.W $B803,$BFFC,$E0F0,$C0C0,$50C0,$E108,$C0E1,$50C0,$8803
-        DC.W $8881,$50C0,$6080,$C066,$D110,$0000,$0004,$0003,$0000
+EPROG:  DC.W $E088,$C0E2,$6050,$9042,$0000,$8842,$9802,$0000,$FFFF
 EIR:    DC.W 0 ;eregistro de instruccion
 EPC:    DC.W 0 ;econtador de programa
 ER0:    DC.W 0 ;eregistro R0
