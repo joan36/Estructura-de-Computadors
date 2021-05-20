@@ -6,7 +6,8 @@
 * Description: Emulador de la CDB
 *-----------------------------------------------------------
     ORG $1000
-EPROG:  DC.W $E088,$C0E2,$6050,$9042,$0000,$8842,$9802,$0000,$FFFF       
+EPROG:  DC.W $B803,$BFFC,$E0F0,$C0C0,$50C0,$E108,$C0E1,$50C0,$8803
+        DC.W $8881,$50C0,$6080,$C066,$D110,$0000,$0004,$0003,$0000       
 EIR:    DC.W 0 ;eregistro de instruccion
 EPC:    DC.W 0 ;econtador de programa
 ER0:    DC.W 0 ;eregistro R0
@@ -19,6 +20,7 @@ ET6:    DC.W 0 ;eregistro T6
 ET7:    DC.W 0 ;eregistro T7
 ESR:    DC.W 0 ;eregistro de estado (00000000 00000NCZ)
 N:      EQU     15
+
 
 
 START:
@@ -120,7 +122,7 @@ SALTOTZ:
 	;SI ESTOY AQUI ES PORQUE Z=1
 	AND.W #$0FF0,EIR ;OBTENEMOS VALOR DE M
 	MOVE.W EIR,D2
-	LSR.L #4,D3
+	LSR.L #4,D2
 	MOVE.W D2,EPC
 	BRA EFETCH
 EJMI:
@@ -429,11 +431,11 @@ ENOT:
 
 ESET:
 
-	ADD.W #$0FFF,EIR
+	AND.W #$0FFF,EIR
 	MOVE.W EIR,D4
 	LSL.L #1,D4
 	MOVE.W D4,D3 ;COPIAMOS REGISTRO IR
-	ADD.W #$000F,D3 ;SACAMOS LA B
+	AND.W #$000F,D3 ;SACAMOS LA B
 	LSR.L #1,D3
 	
  ;HACEMOS UN SALTO A SUBRRUTINA para conocer xb
@@ -458,8 +460,8 @@ ESTENDER:
 
 ;EXTENDEMOS BIT MS
 
-    OR.W #$FF00, EIR
-    MOVE.W EIR,(A0)
+    OR.W #$FF00, D4
+    MOVE.W D4,(A0)
     
     BRA EFLAGS
 EFLAGS:
@@ -504,15 +506,23 @@ ESTO:
 	AND.W #$0FF0,D3
 
     LSR.L #4,D3
+    MULS.W #2,D3
 	MOVE.W D3,A0 ;EN A0 TENEMOS LA DIRECIÓN M
+
+   
+
  	AND.W #$000F,EIR ;EN EIR TENEMOS i
  	MOVE.W EIR,D4
 	BTST.L #3,D4
 	BNE EiT7
+	LEA.L EPROG,A4
+	ADD A4,A0
 	MOVE.W ET6,(A0)
 	BRA EFETCH
 	
 EiT7:
+    LEA.L EPROG,A4
+    ADD.W A4,A0
 	MOVE.W ET7,(A0)
 	BRA EFETCH
 	
@@ -520,8 +530,11 @@ ELOA:
 	MOVE.W EIR,D3
 	AND.W #$0FF0,D3
 	LSR.L #4,D3
-	
-    MOVE.W D3,A0 ;EN A0 TENEMOS LA DIRECION M	    
+
+
+	MULS.W #2,D3
+    MOVE.W D3,A0 ;EN A0 TENEMOS LA DIRECION M
+   
     AND.W #$000F,EIR ;EN EIR TENEMOS i
 
     MOVE.W EIR,D4
@@ -529,6 +542,9 @@ ELOA:
 
 	BTST.L #3,D4
 	BNE EiT72
+
+    LEA.L EPROG,A4
+    ADD.W A4,A0
 	MOVE.W (A0),ET6
 	;ACTUALIZAMOS FLAGS
 	MOVE.W SR,D5
@@ -538,6 +554,8 @@ ELOA:
 	BRA EFETCH
 	
 EiT72:
+    LEA EPROG,A4
+    ADD.W A4,A0
 	MOVE.W (A0),ET7
 	;ACTUALIZAMOS FLAGS
 	MOVE.W SR,D5
@@ -834,6 +852,13 @@ ETFZN:
     
     ;--- FDECOD: FIN DECOD
     END    START
+
+
+
+
+
+
+
 
 
 
